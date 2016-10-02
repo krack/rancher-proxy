@@ -1,6 +1,6 @@
 reverse-proxy:
   ports:
-  - 80:80
+  - 80:8080
   image: krack/rancher-proxy:latest
   labels:
     io.rancher.container.pull_image: always

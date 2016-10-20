@@ -1,5 +1,5 @@
-FROM httpd:2.4
+FROM nginx:latest
 MAINTAINER Sylvain Gandon <krack_6@hotmail.com>
 
 
-COPY ./httpd.conf /usr/local/apache2/conf/httpd.conf
+COPY ./nginx.conf:/etc/nginx/nginx.conf

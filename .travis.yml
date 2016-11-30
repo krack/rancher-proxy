@@ -12,5 +12,7 @@ after_success:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 - docker push krack/rancher-proxy:latest
 - docker push krack/rancher-proxy:test
+- cat docker-compose.yml | while read line; do echo $(eval echo `echo $line`); done > docker-compose.yml.2
+- mv docker-compose.yml.2 docker-compose.yml
 - ./rancher-compose -p rancher-proxy -f docker-compose.yml -r rancher-compose.yml rm -f
 - ./rancher-compose -p rancher-proxy -f docker-compose.yml -r rancher-compose.yml up -d

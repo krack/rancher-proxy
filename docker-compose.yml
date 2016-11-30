@@ -11,6 +11,6 @@ new-reverse-proxy:
   labels:
     io.rancher.container.pull_image: always
   environment:
-    - RANCHER_HOST=${RANCHER_HOST}
-    - RANCHER_ACCESS_KEY=${RANCHER_ACCESS_KEY}
-    - RANCHER_SECRET_KEY=${RANCHER_SECRET_KEY}
+  - RANCHER_HOST=${RANCHER_HOST}
+  - RANCHER_ACCESS_KEY=${RANCHER_ACCESS_KEY}
+  - RANCHER_SECRET_KEY=${RANCHER_SECRET_KEY}

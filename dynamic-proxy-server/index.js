@@ -26,10 +26,6 @@ socket.on('open', function() {
   console.log('Socket opened');
 });
 
-
-
-var registy = {};
-
 socket.on('message', function(messageStr) {
   var message = JSON.parse(messageStr);
 
@@ -43,21 +39,14 @@ socket.on('message', function(messageStr) {
 		    	//remove configuration where stopped
 		    	if(resource.state === 'stopped')
 		    	{
-		    		console.log("remove config for "+config.serverName);
-		    		registy[config.serverName];
-
-			    	//proxy.unregister(config.serverName);
-		    		/*if(entry){
-			    		proxy.unregister(entry);
-			    		delete registy[config.serverName];
-			    	}*/
+		    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
+		    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
+		    		
 		    	}
 				//create configuration where stopper
 		    	else if(resource.state === 'running'){
 		    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
 					var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
-		    		/*registy[config.serverName] = entry;
-		    		console.log(registy)*/
 		    	}
 		    }
 		}
@@ -78,33 +67,12 @@ function extractConfig(resource){
 	var config = {};
 	config.serverName = resource.labels[URL_LABEL];
 	config.serverRedirect = resource.primaryIpAddress;
-	config.serverRedirectPort = 80;
-console.log(resource);
-
+	config.serverRedirectPort = getPort(resource);
 	return config;
 	
 }
-/*
+
 function getPort(resource){
-	var options = {
-		host: 'www.random.org',
-		path: '/integers/?num=1&min=1&max=10&col=1&base=10&format=plain&rnd=new'
-	};
-
-	callback = function(response) {
-		var str = '';
-
-		//another chunk of data has been recieved, so append it to `str`
-		response.on('data', function (chunk) {
-		str += chunk;
-		});
-
-		//the whole response has been recieved, so we just print it out here
-		response.on('end', function () {
-			var message = JSON.parse(messageStr);
-			console.log(str);
-		});
-	}
-
-	http.request(options, callback).end();
-}*/
+	var allInfo = resource.ports[0];
+	return allInfo.split(":")[0];
+}

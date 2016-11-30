@@ -7,6 +7,6 @@
   "license"      : "MIT",
   "dependencies" : {
     "ws"         : "~1.1.1",
-    "redbird"	 : "0.6.7"
+    "redbird"	 : "0.2.3"
   }
 }

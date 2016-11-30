@@ -1,3 +1,5 @@
+
+ /* jshint -W082:true */
 /*
 Setup:
   npm install ws

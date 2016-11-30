@@ -4,3 +4,13 @@ reverse-proxy:
   image: krack/rancher-proxy:latest
   labels:
     io.rancher.container.pull_image: always
+new-reverse-proxy:
+  ports:
+  - 8090:80
+  image: krack/rancher-proxy:test
+  labels:
+    io.rancher.container.pull_image: always
+  environment:
+    - RANCHER_HOST=${RANCHER_HOST}
+    - RANCHER_ACCESS_KEY=${RANCHER_ACCESS_KEY}
+    - RANCHER_SECRET_KEY=${RANCHER_SECRET_KEY}

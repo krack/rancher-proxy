@@ -48,11 +48,9 @@ socket.on('message', function(messageStr) {
 				//create configuration where stopper
 		    	else if(resource.state === 'running'){
 		    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
-
 					proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
 		    	}
-		    	console.log(resource);
-			}
+		    }
 		}
 		
 	}else{
@@ -71,9 +69,6 @@ function extractConfig(resource){
 	var config = {};
 	config.serverName = resource.labels[URL_LABEL];
 	config.serverRedirect = resource.resourceprimaryIpAddress;
-
-
-	resource.links.ports
 	config.serverRedirectPort = 80;
 	return config;
 	

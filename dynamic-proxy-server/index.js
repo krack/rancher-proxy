@@ -75,7 +75,6 @@ function extractConfig(resource){
 
 	resource.links.ports
 	config.serverRedirectPort = 80;
-	data.privatePort
 	return config;
 	
 }

@@ -1,4 +1,4 @@
-reverse-proxy:
-  scale: 1
 new-reverse-proxy:
+  scale: 1
+reverse-proxy:
   scale: 1

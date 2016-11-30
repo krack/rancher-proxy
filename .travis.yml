@@ -8,6 +8,7 @@ script:
 - docker build -t krack/rancher-proxy:latest .
 - cd dynamic-proxy-server\
 - docker build -t krack/rancher-proxy:test .
+- cd ..
 after_success:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 - docker push krack/rancher-proxy:latest

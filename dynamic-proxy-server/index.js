@@ -14,8 +14,8 @@ var http = require('http');
 var proxy = require('redbird')({port: 80});
 
 var host = process.env.RANCHER_HOST;
-var accessKey = RANCHER_ACCESS_KEY;
-var secretKey = RANCHER_SECRET_KEY;
+var accessKey = process.env.RANCHER_ACCESS_KEY;
+var secretKey = process.env.RANCHER_SECRET_KEY;
 
 var URL_LABEL = "proxy_url";
 

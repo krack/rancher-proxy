@@ -28,6 +28,7 @@ socket.on('open', function() {
 
 
 
+var registy = {};
 
 socket.on('message', function(messageStr) {
   var message = JSON.parse(messageStr);
@@ -43,12 +44,20 @@ socket.on('message', function(messageStr) {
 		    	if(resource.state === 'stopped')
 		    	{
 		    		console.log("remove config for "+config.serverName);
-		    		proxy.unregister(config.serverName);
+		    		registy[config.serverName];
+
+			    	//proxy.unregister(config.serverName);
+		    		/*if(entry){
+			    		proxy.unregister(entry);
+			    		delete registy[config.serverName];
+			    	}*/
 		    	}
 				//create configuration where stopper
 		    	else if(resource.state === 'running'){
 		    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
-					proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
+					var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
+		    		/*registy[config.serverName] = entry;
+		    		console.log(registy)*/
 		    	}
 		    }
 		}
@@ -68,8 +77,10 @@ socket.on('close', function() {
 function extractConfig(resource){
 	var config = {};
 	config.serverName = resource.labels[URL_LABEL];
-	config.serverRedirect = resource.resourceprimaryIpAddress;
+	config.serverRedirect = resource.primaryIpAddress;
 	config.serverRedirectPort = 80;
+console.log(resource);
+
 	return config;
 	
 }

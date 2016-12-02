@@ -19,60 +19,104 @@ var secretKey = process.env.RANCHER_SECRET_KEY;
 
 var URL_LABEL = "proxy_url";
 
-var url = 'ws://'+accessKey+':'+secretKey+'@'+host+'/v1/subscribe?eventNames=resource.change';
-var socket = new WebSocket(url);
+var urlEvent = 'ws://'+accessKey+':'+secretKey+'@'+host+'/v1/subscribe?eventNames=resource.change';
 
-socket.on('open', function() {
-  console.log('Socket opened');
-});
 
-socket.on('message', function(messageStr) {
-  var message = JSON.parse(messageStr);
+function callApi(path, callback){
+	var apiHost = "localhost";
+	var portHost = 80;
 
-  if ( message.name === 'resource.change') {
-  	if( message.resourceType === 'container'){
-	   	if(message.data){
-		    var resource = message.data.resource;
 
-		    if(resource.labels[URL_LABEL]){
-		    	var config = extractConfig(resource);
-		    	//remove configuration where stopped
-		    	if(resource.state === 'stopped')
-		    	{
-		    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
-		    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
-		    		
-		    	}
-				//create configuration where stopper
-		    	else if(resource.state === 'running'){
-		    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
-					var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
-		    	}
-		    }
-		}
-		
+	var hostPart = host.split(':');
+	if(hostPart.length ==2){
+		apiHost = hostPart[0];	
+		portHost = hostPart[1];	
 	}else{
-	  //	console.log("message.resourceType : "+message.resourceType)
-	} 
-  }else{
-  //	console.log("message.name : " + message.name);
-  }
-});
+		apiHost = host;
+	}
+	var options = {
+		host: apiHost,
+		port : portHost,
+		path: '/v1/containers',
+		auth: accessKey+':'+secretKey
+	};
+	
+	http.get(options, function(res) {
+		  // Continuously update stream with data
+        var body = '';
+        res.on('data', function(d) {
+            body += d;
+        });
+        res.on('end', function() {
 
-socket.on('close', function() {
-  console.log('Socket closed');
-});
+            // Data reception is done, do whatever with it!
+            var parsed = JSON.parse(body);
+            callback(parsed);
+        });
+	}).on('error', function(e) {
+		console.log(e);
+	});
+}
 
+function manageContainer(container){
+	if(container.labels[URL_LABEL]){
+    	var config = extractConfig(container);
+    	//remove configuration where stopped
+    	if(container.state === 'stopped')
+    	{
+    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
+    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
+    	}
+		//create configuration where stopper
+    	else if(container.state === 'running'){
+    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
+			var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
+    	}
+    }
+}
 function extractConfig(resource){
 	var config = {};
 	config.serverName = resource.labels[URL_LABEL];
 	config.serverRedirect = resource.primaryIpAddress;
-	config.serverRedirectPort = getPort(resource);
+	var allInfo = resource.ports[0];
+	config.serverRedirectPort = allInfo.split(":")[0];
 	return config;
 	
 }
 
-function getPort(resource){
-	var allInfo = resource.ports[0];
-	return allInfo.split(":")[0];
+function addRunningServer(){
+	callApi('/v1/containers', function(result){
+		for(var i = 0; i < result.data.length; i++){
+			var container = result.data[i];
+			manageContainer(container);
+		}
+	});
 }
+
+function runEventListener(){
+	var socket = new WebSocket(urlEvent);
+
+	socket.on('open', function() {
+	  console.log('Socket opened');
+	});
+
+	socket.on('message', function(messageStr) {
+	  var message = JSON.parse(messageStr);
+	  if ( message.name === 'resource.change') {
+	  	if( message.resourceType === 'container'){
+		   	if(message.data){
+			    var resource = message.data.resource;
+			    manageContainer(resource);
+			}		
+		}
+	  }
+	});
+
+	socket.on('close', function() {
+	  console.log('Socket closed');
+	});
+}
+
+
+runEventListener();
+addRunningServer();

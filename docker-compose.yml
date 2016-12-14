@@ -7,6 +7,7 @@ new-reverse-proxy:
     RANCHER_SECRET_KEY: ${RANCHER_SECRET_KEY}
   labels:
     io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: master=
   tty: true
   image: krack/rancher-proxy:test
   stdin_open: true
@@ -15,4 +16,5 @@ reverse-proxy:
   - 80:80/tcp
   labels:
     io.rancher.container.pull_image: always
+    io.rancher.scheduler.affinity:host_label: master=
   image: krack/rancher-proxy:latest

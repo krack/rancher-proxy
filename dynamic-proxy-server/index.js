@@ -60,24 +60,30 @@ function callApi(path, callback){
 
 function manageContainer(container){
 	if(container.labels[URL_LABEL]){
-    	var config = extractConfig(container);
-    	//remove configuration where stopped
-    	if(container.state === 'stopped')
-    	{
-    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
-    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
-    	}
-		//create configuration where stopper
-    	else if(container.state === 'running'){
-    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
-			var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
-    	}
+		try{
+	    	var config = extractConfig(container);
+	    	//remove configuration where stopped
+	    	if(container.state === 'stopped')
+	    	{
+	    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
+	    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
+	    	}
+			//create configuration where stopper
+	    	else if(container.state === 'running'){
+	    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
+				var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
+	    	}
+	    }catch(e){
+	    	console.log(e);
+	    }
     }
 }
 function extractConfig(resource){
 	var config = {};
-	config.serverName = resource.labels[URL_LABEL];
-	config.serverRedirect = resource.primaryIpAddress;
+	config.serverName = resource.labels[URL_LABEL];	
+	var serviceName = resource.labels['io.rancher.stack_service.name'];
+	var dns = serviceName.split("/")[1]+"."+serviceName.split("/")[0];
+	config.serverRedirect = dns;
 	var allInfo = resource.ports[0];
 	config.serverRedirectPort = allInfo.split(":")[0];
 	return config;

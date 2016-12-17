@@ -13,5 +13,5 @@ services:
       io.rancher.container.pull_image: always
       io.rancher.scheduler.affinity:host_label: master=1
     tty: true
-    image: krack/rancher-proxy:test
+    image: krack/rancher-proxy:latest
     stdin_open: true

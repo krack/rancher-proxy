@@ -6,7 +6,7 @@ services:
     image: rancher/lb-service-haproxy:v0.4.6
   reverse-proxy:
     environment:
-      RANCHER_HOST: ${RANCHER_HOST}
+      RANCHER_URL: ${RANCHER_URL}
       RANCHER_ACCESS_KEY: ${RANCHER_ACCESS_KEY}
       RANCHER_SECRET_KEY: ${RANCHER_SECRET_KEY}
     labels:

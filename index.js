@@ -13,7 +13,7 @@ var WebSocket = require('ws');
 var http = require('http');
 var proxy = require('redbird')({port: 80});
 
-var host = process.env.RANCHER_HOST;
+var host = process.env.RANCHER_URL;
 var accessKey = process.env.RANCHER_ACCESS_KEY;
 var secretKey = process.env.RANCHER_SECRET_KEY;
 
@@ -61,24 +61,30 @@ function callApi(path, callback){
 function manageContainer(container){
 	if(container.labels[URL_LABEL]){
 		try{
-	    	var config = extractConfig(container);
-	    	//remove configuration where stopped
-	    	if(container.state === 'stopped')
-	    	{
-	    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
-	    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
-	    	}
-			//create configuration where stopper
-	    	else if(container.state === 'running'){
-	    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
-				var entry = proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
-	    	}
+	    	var configurations = extractConfig(container);
+
+	    	for(var i = 0; i < configurations.length; i++){
+	    		var config = configurations[i];
+		    	//remove configuration where stopped
+		    	if(container.state === 'stopped')
+		    	{
+		    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
+		    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
+		    	}
+				//create configuration where stopper
+		    	else if(container.state === 'running'){
+		    		console.log("add config for "+config.serverName+" : "+config.serverRedirect+":"+config.serverRedirectPort);
+					proxy.register(config.serverName, "http://"+config.serverRedirect+":"+config.serverRedirectPort);
+		    	}
+		    }
 	    }catch(e){
 	    	console.log(e);
 	    }
     }
 }
 function extractConfig(resource){
+	var configurations = [];
+
 	var config = {};
 	config.serverName = resource.labels[URL_LABEL];	
 	var serviceName = resource.labels['io.rancher.stack_service.name'];
@@ -86,10 +92,23 @@ function extractConfig(resource){
 	config.serverRedirect = dns;
 	var allInfo = resource.ports[0];
 	config.serverRedirectPort = allInfo.split(":")[0];
-	return config;
+
+	configurations.push(config);
+
+	//if is production configuration, add url without www.
+	if(config.serverRedirect.indexOf("www.")===0){
+		var prodConfig = {};
+		prodConfig.serverName = config.serverName; 
+		prodConfig.serverRedirect = config.serverRedirectreplace("www.", "");
+		prodConfig.serverRedirectPort = config.serverRedirectPort;
+
+		configurations.push(prodConfig);
+	}
+
+
+	return configurations;
 	
 }
-
 function addRunningServer(){
 	callApi('/v1/containers', function(result){
 		for(var i = 0; i < result.data.length; i++){

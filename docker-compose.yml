@@ -4,6 +4,8 @@ services:
     ports:
     - 80
     image: rancher/lb-service-haproxy:v0.4.6
+    labels:
+      io.rancher.scheduler.affinity:host_label: master=1
   reverse-proxy:
     environment:
       RANCHER_HOST: ${RANCHER_HOST}

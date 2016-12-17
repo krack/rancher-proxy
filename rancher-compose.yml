@@ -4,7 +4,7 @@ services:
     scale: 1
     lb_config:
       port_rules:
-      - source_port: ${HOST_PORT}
+      - source_port: 80
         target_port: 80
         service: reverse-proxy
     health_check:

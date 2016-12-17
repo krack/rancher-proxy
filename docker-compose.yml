@@ -1,20 +1,19 @@
-new-reverse-proxy:
-  ports:
-  - 8090:80/tcp
-  environment:
-    RANCHER_HOST: ${RANCHER_HOST}
-    RANCHER_ACCESS_KEY: ${RANCHER_ACCESS_KEY}
-    RANCHER_SECRET_KEY: ${RANCHER_SECRET_KEY}
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: master=1
-  tty: true
-  image: krack/rancher-proxy:test
-  stdin_open: true
-reverse-proxy:
-  ports:
-  - 80:80/tcp
-  labels:
-    io.rancher.container.pull_image: always
-    io.rancher.scheduler.affinity:host_label: master=1
-  image: krack/rancher-proxy:latest
+version: '2'
+services:
+  load-balancer:
+    ports:
+    - 80
+    image: rancher/lb-service-haproxy:v0.4.6
+  reverse-proxy:
+    ports:
+    - 80:80/tcp
+    environment:
+      RANCHER_HOST: ${RANCHER_HOST}
+      RANCHER_ACCESS_KEY: ${RANCHER_ACCESS_KEY}
+      RANCHER_SECRET_KEY: ${RANCHER_SECRET_KEY}
+    labels:
+      io.rancher.container.pull_image: always
+      io.rancher.scheduler.affinity:host_label: master=1
+    tty: true
+    image: krack/rancher-proxy:test
+    stdin_open: true

@@ -6,13 +6,8 @@ before_install:
 - tar -zxvf rancher-compose.tar.gz && mv ./rancher-compose-v0.8.6/rancher-compose ./rancher-compose && rm -fr ./rancher-compose-v0.8.6 && rm ./rancher-compose.tar.gz
 script:
 - docker build -t krack/rancher-proxy:latest .
-- cd dynamic-proxy-server\
-- docker build -t krack/rancher-proxy:test .
-- cd ..
 after_success:
 - docker login -u "$DOCKER_USERNAME" -p "$DOCKER_PASSWORD"
 - docker push krack/rancher-proxy:latest
-- docker push krack/rancher-proxy:test
-- cat docker-compose.yml | while read line; do echo $(eval echo `echo $line`); done > docker-compose.yml.2
 - ./rancher-compose -p rancher-proxy -f docker-compose.yml -r rancher-compose.yml rm -f
 - ./rancher-compose -p rancher-proxy -f docker-compose.yml -r rancher-compose.yml up -d

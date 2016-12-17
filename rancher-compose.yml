@@ -1,4 +1,17 @@
-new-reverse-proxy:
-  scale: 1
-reverse-proxy:
-  scale: 1
+version: '2'
+services:  
+  load-balancer:
+    scale: 1
+    lb_config:
+      port_rules:
+      - source_port: ${HOST_PORT}
+        target_port: 80
+        service: reverse-proxy
+    health_check:
+      port: 42
+      interval: 2000
+      unhealthy_threshold: 3
+      healthy_threshold: 2
+      response_timeout: 2000
+  reverse-proxy:
+    scale: 1

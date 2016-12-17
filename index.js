@@ -13,7 +13,7 @@ var WebSocket = require('ws');
 var http = require('http');
 var proxy = require('redbird')({port: 80});
 
-var host = process.env.RANCHER_URL;
+var host = process.env.RANCHER_HOST;
 var accessKey = process.env.RANCHER_ACCESS_KEY;
 var secretKey = process.env.RANCHER_SECRET_KEY;
 
@@ -96,10 +96,10 @@ function extractConfig(resource){
 	configurations.push(config);
 
 	//if is production configuration, add url without www.
-	if(config.serverRedirect.indexOf("www.")===0){
+	if(config.serverName.indexOf("www.")===0){
 		var prodConfig = {};
-		prodConfig.serverName = config.serverName; 
-		prodConfig.serverRedirect = config.serverRedirectreplace("www.", "");
+		prodConfig.serverName = config.serverName.replace("www.", ""); 
+		prodConfig.serverRedirect = config.serverRedirect;
 		prodConfig.serverRedirectPort = config.serverRedirectPort;
 
 		configurations.push(prodConfig);

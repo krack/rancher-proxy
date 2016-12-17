@@ -5,8 +5,6 @@ services:
     - 80
     image: rancher/lb-service-haproxy:v0.4.6
   reverse-proxy:
-    ports:
-    - 80:80/tcp
     environment:
       RANCHER_HOST: ${RANCHER_HOST}
       RANCHER_ACCESS_KEY: ${RANCHER_ACCESS_KEY}

@@ -19,4 +19,3 @@ services:
     tty: true
     image: krack/rancher-proxy:latest
     stdin_open: true
-    build: .

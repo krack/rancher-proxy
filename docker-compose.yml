@@ -3,7 +3,7 @@ services:
   load-balancer:
     ports:
     - 80
-    image: rancher/lb-service-haproxy:v0.4.6
+    image: rancher/lb-service-haproxy:v0.5.9
     labels:
       io.rancher.scheduler.affinity:host_label: master=1
       io.rancher.container.network: true 
@@ -19,3 +19,4 @@ services:
     tty: true
     image: krack/rancher-proxy:latest
     stdin_open: true
+    build: .

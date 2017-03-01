@@ -91,7 +91,7 @@ function extractConfig(resource){
 	var dns = serviceName.split("/")[1]+"."+serviceName.split("/")[0];
 	config.serverRedirect = dns;
 	var allInfo = resource.ports[0];
-	config.serverRedirectPort = allInfo.split(":")[0];
+	config.serverRedirectPort = allInfo.split(":")[1];
 
 	configurations.push(config);
 

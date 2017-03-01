@@ -6,6 +6,7 @@ services:
     image: rancher/lb-service-haproxy:v0.4.6
     labels:
       io.rancher.scheduler.affinity:host_label: master=1
+      io.rancher.container.network: true 
   reverse-proxy:
     environment:
       RANCHER_HOST: ${RANCHER_HOST}
@@ -13,6 +14,7 @@ services:
       RANCHER_SECRET_KEY: ${RANCHER_SECRET_KEY}
     labels:
       io.rancher.container.pull_image: always
+      io.rancher.container.network: true 
       io.rancher.scheduler.affinity:host_label: master=1
     tty: true
     image: krack/rancher-proxy:latest

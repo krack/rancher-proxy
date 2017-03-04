@@ -58,7 +58,7 @@ function callApi(path, callback){
 	});
 }
 
-function manageContainer(container){
+function manageContainer(container, ignoreStoppped){
 	if(container.labels[URL_LABEL]){
 		try{
 	    	var configurations = extractConfig(container);
@@ -66,7 +66,7 @@ function manageContainer(container){
 	    	for(var i = 0; i < configurations.length; i++){
 	    		var config = configurations[i];
 		    	//remove configuration where stopped
-		    	if(container.state === 'stopped')
+		    	if(!ignoreStoppped && container.state === 'stopped')
 		    	{
 		    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
 		    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);
@@ -115,7 +115,7 @@ function addRunningServer(){
 	callApi('/v1/containers', function(result){
 		for(var i = 0; i < result.data.length; i++){
 			var container = result.data[i];
-			manageContainer(container);
+			manageContainer(container, true);
 		}
 	});
 }
@@ -133,7 +133,7 @@ function runEventListener(){
 	  	if( message.resourceType === 'container'){
 		   	if(message.data){
 			    var resource = message.data.resource;
-			    manageContainer(resource);
+			    manageContainer(resource, false);
 			}		
 		}
 	  }

@@ -66,7 +66,7 @@ function manageContainer(container, ignoreStoppped){
 	    	for(var i = 0; i < configurations.length; i++){
 	    		var config = configurations[i];
 		    	//remove configuration where stopped
-		    	if(!ignoreStoppped && container.state === 'stopped')
+		    	if(!ignoreStoppped && container.state === 'stopping')
 		    	{
 		    		console.log("remove config for "+config.serverName+"/ : "+config.serverRedirect+":"+config.serverRedirectPort);
 		    		 proxy.unregister(config.serverName+"/", config.serverRedirect+":"+config.serverRedirectPort);

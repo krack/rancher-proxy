@@ -141,6 +141,8 @@ function runEventListener(){
 
 	socket.on('close', function() {
 	  console.log('Socket closed');
+	  //relauch where is close
+	  runEventListener();
 	});
 }
 

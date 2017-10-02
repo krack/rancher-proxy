@@ -2,7 +2,7 @@ version: '2'
 services:
   load-balancer:
     ports:
-    - 80
+    - 80:80
     image: rancher/lb-service-haproxy:v0.5.9
     labels:
       io.rancher.scheduler.affinity:host_label: master=1
@@ -19,3 +19,14 @@ services:
     tty: true
     image: krack/rancher-proxy:latest
     stdin_open: true
+  load-balancer-https:
+    ports:
+    - 443:443
+    image: nginx:mainline-alpine
+    volumes:
+    - nginx-certs:/etc/nginx/certs:ro
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
+    labels:
+      io.rancher.scheduler.affinity:host_label: master=1
+      io.rancher.container.network: true 

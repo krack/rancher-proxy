@@ -9,5 +9,3 @@ services:
         service: reverse-proxy
   reverse-proxy:
     scale: 1
-  load-balancer-https:
-    scale: 1

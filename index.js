@@ -19,7 +19,7 @@ var secretKey = process.env.RANCHER_SECRET_KEY;
 
 var URL_LABEL = "proxy_url";
 
-var urlEvent = 'ws://' + accessKey + ':' + secretKey + '@' + host + '/v1/subscribe?eventNames=resource.change';
+var urlEvent = 'wss://' + accessKey + ':' + secretKey + '@' + host + '/v1/subscribe?eventNames=resource.change';
 
 
 function callApi(path, callback) {
